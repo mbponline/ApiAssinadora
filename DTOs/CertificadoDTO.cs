@@ -20,3 +20,16 @@ public class CertificadoOutputPostDTO
     }
 
 }
+
+public class CertificadoOutputGetDTO
+{
+
+    public string Certificado { get; set; }
+    public long Id { get; set; }
+
+    public CertificadoOutputGetDTO(long id)
+    {
+        Id = id;
+    }
+
+}

@@ -5,7 +5,9 @@ using ApiAssinadora.Models;
 
 public interface ICertificadoService
 {
-    Task<CertificadoOutputPostDTO> Add(CertificadoInputPostDTO input);
+    Task<CertificadoOutputPostDTO> Add(CertificadoInputPostDTO input,string user);
+
+    Task<List<CertificadoOutputGetDTO>> Get(string user);
 
 
 }

@@ -1,14 +1,12 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Hosting;
-using System.IO;
-using System.Text;
+using Microsoft.AspNetCore.Authorization;
+using System.Net.Http;
+using Microsoft.AspNetCore.Authentication;
 using System;
-using ApiAssinadora.Models;
-using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 
+[Authorize]
 [ApiController]
 [Route("[controller]")]
 public class CertificadoController : ControllerBase
@@ -19,11 +17,18 @@ public class CertificadoController : ControllerBase
     {
         _certserv = CertificadoService;
     }
+
     [HttpPost("Upload")]
     public async Task<ActionResult<CertificadoOutputPostDTO>> EnviaArquivo([FromForm] CertificadoInputPostDTO input)
     {
-        var resp = await _certserv.Add(input);
+        var resp = await _certserv.Add(input,User.Identity.Name);
         return resp;
+    }
+
+    [HttpGet]
+    public async Task<ActionResult<List<CertificadoOutputGetDTO>>> Get()
+    {
+        return await _certserv.Get(User.Identity.Name);
     }
 
 

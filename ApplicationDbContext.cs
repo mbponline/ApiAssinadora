@@ -1,7 +1,8 @@
 ﻿using ApiAssinadora.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-public class ApplicationDbContext : DbContext
+public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
 {
     public DbSet<Certificado> Certificados { get; set; }
     public DbSet<Documento> Documentos { get; set; }

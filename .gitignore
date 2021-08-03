@@ -360,3 +360,7 @@ MigrationBackup/
 .ionide/
 *.db
 myapp.db
+*.txt
+*.db
+*.db
+myapp.db
