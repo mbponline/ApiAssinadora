@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using ApiAssinadora.Models;
+using DocSign.Domain.Util.Sign;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -27,7 +28,7 @@ public class CertificadoService : ICertificadoService
         var userid = usuario.Id;
 
         string dir = _environment.ContentRootPath;
-        string caminho = dir + "\\Arquivos\\Certificados\\" + input.Arquivo.FileName;
+        string caminho = dir + "\\Arquivos\\Certificados\\_temp" + input.Arquivo.FileName;
 
         if (!Directory.Exists(dir + "\\Arquivos\\Certificados\\"))
         {
@@ -39,13 +40,12 @@ public class CertificadoService : ICertificadoService
         {
             input.Arquivo.CopyTo(ms);
             arquivo = ms.ToArray();
+            Cert certificado = new Cert(ms,input.Password);
             //arquivo = Convert.ToBase64String(fileBytes);
         }
-
         var ext = System.IO.Path.GetExtension(input.Arquivo.FileName);
 
-
-        var cert = new Certificado(arquivo, ext, input.Password, userid.ToString());
+        var cert = new Certificado(input.Arquivo.FileName,arquivo, ext, input.Password, userid.ToString());
         _context.Certificados.Add(cert);
         await _context.SaveChangesAsync();
 
@@ -69,6 +69,7 @@ public class CertificadoService : ICertificadoService
 
         return listaout;
     }
+
 
 
 

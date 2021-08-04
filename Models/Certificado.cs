@@ -13,14 +13,17 @@ namespace ApiAssinadora.Models
 {
     public class Certificado
     {
-        public Certificado(byte[] arquivo, string tipo, string senha, string UserId)
+        public Certificado(string nome ,byte[] arquivo, string tipo, string senha, string UserId)
         {
+            this.Nome = nome;
             this.Arquivo = arquivo;
             this.Tipo = tipo;
             this.Senha = senha;
             this.UserId = UserId;
         }
         public long Id { get; set; }
+
+        public string Nome{get;set;}
         public byte[] Arquivo { get; set; }
         public string Tipo { get; set; }
         public string Senha { get; set; }

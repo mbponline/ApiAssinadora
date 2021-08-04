@@ -364,3 +364,5 @@ myapp.db
 *.db
 *.db
 myapp.db
+*.pfx
+*.pdf

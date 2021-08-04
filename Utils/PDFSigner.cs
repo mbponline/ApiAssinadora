@@ -17,6 +17,7 @@ namespace DocSign.Domain.Util.Sign
         #region Attributes
         private string path = "";
         private string password = "";
+        private MemoryStream Stream;
         private AsymmetricKeyParameter akp;
         private Org.BouncyCastle.X509.X509Certificate[] chain;
         #endregion
@@ -24,11 +25,11 @@ namespace DocSign.Domain.Util.Sign
         #region Accessors
         public Org.BouncyCastle.X509.X509Certificate[] Chain
         {
-          get { return chain; }
+            get { return chain; }
         }
         public AsymmetricKeyParameter Akp
         {
-          get { return akp; }
+            get { return akp; }
         }
 
         public string Path
@@ -87,6 +88,49 @@ namespace DocSign.Domain.Util.Sign
                     chain[k] = ce[k].Certificate;
             }
         }
+        private void processCertStream()
+        {
+            string alias = null;
+            string aliasCert = null;
+
+            Pkcs12Store pk12;
+            Stream.Position = 0;
+
+            //First we'll read the certificate file
+            pk12 = new Pkcs12Store(Stream, this.password.ToCharArray());
+            //then Iterate throught certificate entries to find the private key entry
+            IEnumerator i = pk12.Aliases.GetEnumerator();
+            while (i.MoveNext())
+            {
+                alias = ((string)i.Current);
+                if (pk12.IsKeyEntry(alias))
+                    break;
+            }
+
+            this.akp = pk12.GetKey(alias).Key;
+            X509CertificateEntry[] ce = pk12.GetCertificateChain(alias);
+
+            if (ce == null)
+            {
+                i.Reset();
+                while (i.MoveNext())
+                {
+                    aliasCert = ((string)i.Current);
+                    break;
+                }
+
+                X509CertificateEntry _ce = pk12.GetCertificate(aliasCert);
+                this.chain = new Org.BouncyCastle.X509.X509Certificate[1];
+                for (int k = 0; k < 1; ++k)
+                    chain[k] = _ce.Certificate;
+            }
+            else
+            {
+                this.chain = new Org.BouncyCastle.X509.X509Certificate[ce.Length];
+                for (int k = 0; k < ce.Length; ++k)
+                    chain[k] = ce[k].Certificate;
+            }
+        }
         #endregion
 
         #region Constructors
@@ -106,6 +150,13 @@ namespace DocSign.Domain.Util.Sign
             this.processCert();
         }
         #endregion
+
+        public Cert(MemoryStream cstream, string cpassword)
+        {
+            this.Stream = cstream;
+            this.Password = cpassword;
+            this.processCertStream();
+        }
     }
 
     #region Metadata
@@ -161,8 +212,8 @@ namespace DocSign.Domain.Util.Sign
         public byte[] getStreamedMetaData()
         {
             MemoryStream os = new System.IO.MemoryStream();
-            XmpWriter xmp = new XmpWriter(os, this.info);            
-            xmp.Close();            
+            XmpWriter xmp = new XmpWriter(os, this.info);
+            xmp.Close();
             return os.ToArray();
         }
     }
@@ -178,6 +229,7 @@ namespace DocSign.Domain.Util.Sign
         private string outputPDF = "";
         private Cert myCert;
         private MetaData metadata;
+        private PdfReader reader;
 
         public PDFSigner(string input, string output)
         {
@@ -205,6 +257,15 @@ namespace DocSign.Domain.Util.Sign
             this.metadata = md;
         }
 
+        public PDFSigner(PdfReader reader, string output, Cert cert, MetaData md)
+        {
+            this.reader = reader;
+            this.outputPDF = output;
+            this.myCert = cert;
+            this.metadata = md;
+        }
+
+
         public void Verify()
         {
         }
@@ -220,7 +281,7 @@ namespace DocSign.Domain.Util.Sign
             st.MoreInfo = this.metadata.getMetaData();
             st.XmpMetadata = this.metadata.getStreamedMetaData();
             PdfSignatureAppearance sap = st.SignatureAppearance;
-            
+
             sap.SetCrypto(this.myCert.Akp, this.myCert.Chain, null, PdfSignatureAppearance.WincerSigned);
             sap.Reason = SigReason;
             sap.Contact = SigContact;
@@ -229,8 +290,32 @@ namespace DocSign.Domain.Util.Sign
 
             if (visible)
                 sap.SetVisibleSignature(new iTextSharp.text.Rectangle(100, 100, 250, 150), 1, null);
-            
+
             st.Close();
+        }
+        public MemoryStream SignReader(string SigReason, string SigContact, string SigLocation, bool visible)
+        {
+            //Activate MultiSignatures
+            //PdfStamper st = PdfStamper.CreateSignature(this.reader, new FileStream(this.outputPDF, FileMode.Create, FileAccess.Write), '\0', null, true);
+            //To disable Multi signatures uncomment this line : every new signature will invalidate older ones !
+            //PdfStamper st = PdfStamper.CreateSignature(reader, new FileStream(this.outputPDF, FileMode.Create, FileAccess.Write), '\0');
+            var ms = new MemoryStream(); 
+            PdfStamper st = PdfStamper.CreateSignature(this.reader, ms, '\0', null, true);
+            st.MoreInfo = this.metadata.getMetaData();
+            st.XmpMetadata = this.metadata.getStreamedMetaData();
+            PdfSignatureAppearance sap = st.SignatureAppearance;
+
+            sap.SetCrypto(this.myCert.Akp, this.myCert.Chain, null, PdfSignatureAppearance.WincerSigned);
+            sap.Reason = SigReason;
+            sap.Contact = SigContact;
+            sap.Location = SigLocation;
+            sap.SignDate = DateTime.Now;
+
+            if (visible)
+                sap.SetVisibleSignature(new iTextSharp.text.Rectangle(100, 100, 250, 150), 1, null);
+
+            st.Close();
+            return ms;
         }
     }
 }

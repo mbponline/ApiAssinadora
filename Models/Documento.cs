@@ -12,17 +12,28 @@ namespace ApiAssinadora.Models
 {
     public class Documento
     {
-        [JsonIgnore]public string Caminho { get; set; }
+        public string Nome { get; set; }
 
-        [JsonIgnore]public long Id { get; set; }
+        public long Id { get; set; }
 
-        [NotMapped] public IFormFile Arquivo { get; set; }
+        public byte[] Arquivo { get; set; }
 
-        public Documento(string caminho)
+        public string UserId { get; set; }
+
+        public ApplicationUser User { get; set; }
+
+        public long CertificadoId { get; set; }
+
+        public Certificado Certificado { get; set; }
+
+        public Documento(string nome, string UserId, long CertificadoId, byte[] arquivo)
         {
-            Caminho = caminho;
+            Nome = nome;
+            this.UserId = UserId;
+            this.CertificadoId = CertificadoId;
+            Arquivo = arquivo;
         }
-        public Documento(){}
+
     }
-    
+
 }

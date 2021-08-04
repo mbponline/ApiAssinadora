@@ -96,6 +96,7 @@ namespace ApiAssinadora
             services.AddDbContext<ApplicationDbContext>(options => options.UseSqlite("Data Source=myapp.db"));
             // Services
             services.AddScoped<ICertificadoService, CertificadoService>();
+            services.AddScoped<IDocumentoService, DocumentoService>();
             // Controllers
             services.AddControllers().AddNewtonsoftJson(options =>
             options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
