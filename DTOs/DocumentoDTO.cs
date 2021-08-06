@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -45,15 +46,32 @@ public class DocumentoOutputGetDTO
     public long Id { get; set; }
 
     public string Certificado { get; set; }
+    public string Data{get;set;}
 
-    public DocumentoOutputGetDTO(long id,string nome,string certificado)
+    public DocumentoOutputGetDTO(long id,string nome,string certificado,DateTime data)
     {
         Id = id;
         Nome = nome;
         Certificado = certificado;
+        Data = data.ToString("dd/MM/yyyy HH:mm:ss");
     }
 
 }
+
+public class DocumentoOutputGetDownloadDTO
+{
+    public byte[] Arquivo{get;set;}
+    public string Nome{get;set;}
+
+    public DocumentoOutputGetDownloadDTO(byte[] arquivo,string nome)
+    {
+        Arquivo = arquivo;
+        Nome = nome;
+    }
+
+
+}
+
 
 
 

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -83,10 +84,45 @@ public class DocumentoService : IDocumentoService
 
         foreach (var doc in lista)
         {
-            listaout.Add(new DocumentoOutputGetDTO(doc.Id,doc.Nome,doc.Certificado.Nome));
+            listaout.Add(new DocumentoOutputGetDTO(doc.Id, doc.Nome, doc.Certificado.Nome, doc.Data));
         }
 
         return listaout;
     }
 
+    public async Task<DocumentoOutputGetDownloadDTO> Download(string user, long id)
+    {
+        ApplicationUser usuario = await _user.FindByNameAsync(user);
+        var userid = usuario.Id;
+        var documento = await _context.Documentos.FirstOrDefaultAsync(c => c.UserId == userid.ToString() && c.Id == id);
+        var output = new DocumentoOutputGetDownloadDTO(documento.Arquivo, documento.Nome);
+        return (output);
+    }
+
+    public async Task<DocumentoOutputUrlDTO> DownloadUrl(string user, long id, string path, string token)
+    {
+        ApplicationUser usuario = await _user.FindByNameAsync(user);
+        var userid = usuario.Id;
+        var documento = await _context.Documentos.FirstOrDefaultAsync(c => c.UserId == userid.ToString() && c.Id == id);
+
+        string dir = _environment.ContentRootPath;
+        string caminho = dir + "\\Arquivos\\Documentos\\" + documento.Nome;
+
+        if (!Directory.Exists(dir + "\\Arquivos\\Documentos\\"))
+        {
+            Directory.CreateDirectory(dir + "\\Arquivos\\Documentos\\");
+        }
+
+        using (MemoryStream ms = new MemoryStream(documento.Arquivo))
+        {
+            using (FileStream fs = new FileStream(caminho, FileMode.OpenOrCreate))
+            {
+                ms.WriteTo(fs);
+            }
+
+        }
+        var urlDownload = path + "/Arquivos/Documentos?" + "i=" + token + "&d=" + documento.Nome;
+        var output = new DocumentoOutputUrlDTO(documento.Id,documento.Nome,urlDownload);
+        return output;
+    }
 }

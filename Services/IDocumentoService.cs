@@ -9,5 +9,8 @@ public interface IDocumentoService
 
     Task<List<DocumentoOutputGetDTO>> Get(string user);
 
+    Task<DocumentoOutputGetDownloadDTO> Download(string user,long id);
+    Task<DocumentoOutputUrlDTO> DownloadUrl(string user,long id,string path,string token);
+
 
 }

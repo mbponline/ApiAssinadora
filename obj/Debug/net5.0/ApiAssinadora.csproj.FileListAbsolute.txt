@@ -78,3 +78,14 @@ E:\Curso C#\Assinador\ApiAssinadora\obj\Debug\net5.0\ApiAssinadora.xml
 E:\Curso C#\Assinador\ApiAssinadora\bin\Debug\net5.0\FluentValidation.dll
 E:\Curso C#\Assinador\ApiAssinadora\bin\Debug\net5.0\FluentValidation.AspNetCore.dll
 E:\Curso C#\Assinador\ApiAssinadora\bin\Debug\net5.0\FluentValidation.DependencyInjectionExtensions.dll
+E:\Curso C#\Assinador\ApiAssinadora\bin\Debug\net5.0\ApiAssinadora.Views.dll
+E:\Curso C#\Assinador\ApiAssinadora\bin\Debug\net5.0\ApiAssinadora.Views.pdb
+E:\Curso C#\Assinador\ApiAssinadora\obj\Debug\net5.0\ApiAssinadora.RazorAssemblyInfo.cache
+E:\Curso C#\Assinador\ApiAssinadora\obj\Debug\net5.0\ApiAssinadora.RazorAssemblyInfo.cs
+E:\Curso C#\Assinador\ApiAssinadora\obj\Debug\net5.0\ApiAssinadora.TagHelpers.input.cache
+E:\Curso C#\Assinador\ApiAssinadora\obj\Debug\net5.0\ApiAssinadora.TagHelpers.output.cache
+E:\Curso C#\Assinador\ApiAssinadora\obj\Debug\net5.0\ApiAssinadora.RazorCoreGenerate.cache
+E:\Curso C#\Assinador\ApiAssinadora\obj\Debug\net5.0\Razor\Pages\Index.cshtml.g.cs
+E:\Curso C#\Assinador\ApiAssinadora\obj\Debug\net5.0\Razor\Pages\_ViewImport.cshtml.g.cs
+E:\Curso C#\Assinador\ApiAssinadora\obj\Debug\net5.0\ApiAssinadora.RazorTargetAssemblyInfo.cs
+E:\Curso C#\Assinador\ApiAssinadora\obj\Debug\net5.0\ApiAssinadora.Views.pdb

@@ -366,3 +366,5 @@ myapp.db
 myapp.db
 *.pfx
 *.pdf
+Arquivos/Certificados/Boleto.pdf
+*.pfx

@@ -40,18 +40,18 @@ public class CertificadoService : ICertificadoService
         {
             input.Arquivo.CopyTo(ms);
             arquivo = ms.ToArray();
-            Cert certificado = new Cert(ms,input.Password);
+            Cert certificado = new Cert(ms, input.Password);
             //arquivo = Convert.ToBase64String(fileBytes);
         }
         var ext = System.IO.Path.GetExtension(input.Arquivo.FileName);
 
-        var cert = new Certificado(input.Arquivo.FileName,arquivo, ext, input.Password, userid.ToString());
+        var cert = new Certificado(input.Arquivo.FileName, arquivo, ext, input.Password, userid.ToString());
         _context.Certificados.Add(cert);
         await _context.SaveChangesAsync();
 
         File.WriteAllBytes(caminho, cert.Arquivo);
 
-        var resp = new CertificadoOutputPostDTO(cert.Id, cert.Tipo);
+        var resp = new CertificadoOutputPostDTO(cert.Id, cert.Nome);
         return resp;
     }
 
@@ -64,11 +64,55 @@ public class CertificadoService : ICertificadoService
 
         foreach (Certificado cert in lista)
         {
-            listaout.Add(new CertificadoOutputGetDTO(cert.Id));
+            listaout.Add(new CertificadoOutputGetDTO(cert.Id, cert.Nome,cert.Data));
         }
 
         return listaout;
     }
+
+    public async Task<CertificadoOutputPutDTO> Update(CertificadoInputPutDTO input, string user)
+    {
+        ApplicationUser usuario = await _user.FindByNameAsync(user);
+        var userid = usuario.Id;
+
+        byte[] arquivo;
+        using (var ms = new MemoryStream())
+        {
+            input.Arquivo.CopyTo(ms);
+            arquivo = ms.ToArray();
+            Cert certificado = new Cert(ms, input.Password);
+        }
+        var ext = System.IO.Path.GetExtension(input.Arquivo.FileName);
+
+        var cert = await _context.Certificados.FirstOrDefaultAsync(c => c.UserId == userid.ToString() && c.Id == input.Id);
+
+        cert.Nome = input.Arquivo.FileName;
+        cert.Arquivo = arquivo;
+        cert.Tipo = ext;
+        cert.Senha = input.Password;
+        cert.Data = DateTime.Now;
+
+        _context.Certificados.Update(cert);
+        await _context.SaveChangesAsync();
+
+        var resp = new CertificadoOutputPutDTO(cert.Id, cert.Nome);
+        return resp;
+
+    }
+
+    public async Task<CertificadoOutputDeleteDTO> Deletar(long id, string user)
+    {
+        ApplicationUser usuario = await _user.FindByNameAsync(user);
+        var userid = usuario.Id;
+        var cert = await _context.Certificados.FirstOrDefaultAsync(c => c.UserId == userid.ToString() && c.Id == id);
+
+        _context.Certificados.Remove(cert);
+        await _context.SaveChangesAsync();
+
+        var resp = new CertificadoOutputDeleteDTO(cert.Id, cert.Nome);
+        return resp;
+    }
+
 
 
 

@@ -15617,6 +15617,17 @@
     "CSharpLanguageVersion": 900
   },
   "RootNamespace": "ApiAssinadora",
-  "Documents": [],
+  "Documents": [
+    {
+      "FilePath": "e:\\Curso C#\\Assinador\\ApiAssinadora\\Pages\\Index.cshtml",
+      "TargetPath": "Pages\\Index.cshtml",
+      "FileKind": "mvc"
+    },
+    {
+      "FilePath": "e:\\Curso C#\\Assinador\\ApiAssinadora\\Pages\\_ViewImport.cshtml",
+      "TargetPath": "Pages\\_ViewImport.cshtml",
+      "FileKind": "mvc"
+    }
+  ],
   "SerializationFormat": "0.2"
 }

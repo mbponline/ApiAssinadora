@@ -12,6 +12,8 @@ using iTextSharp.text.pdf;
 using Microsoft.AspNetCore.Authorization;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.IdentityModel.Tokens.Jwt;
+using Microsoft.AspNetCore.Authentication;
 
 [Authorize]
 [ApiController]
@@ -39,5 +41,22 @@ public class DocumentoController : ControllerBase
         var resp = await _docserv.Get(User.Identity.Name);
         return resp;
     }
+
+    [HttpGet("Download/{id}")]
+    public async Task<ActionResult<dynamic>> Download(long id)
+    {
+        var resp = await _docserv.Download(User.Identity.Name, id);
+        return File(resp.Arquivo, "application/octet-stream", resp.Nome);
+    }
+
+    [HttpGet("Download/Url/{id}")]
+    public async Task<ActionResult<DocumentoOutputUrlDTO>> DownloadUrl(long id)
+    {
+        var token = await Request.HttpContext.GetTokenAsync("access_token");
+        string path = Request.HttpContext.Request.Host.Value;
+        var resp = await _docserv.DownloadUrl(User.Identity.Name, id,path,token);
+        return resp;
+    }
+
 
 }

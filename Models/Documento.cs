@@ -26,12 +26,15 @@ namespace ApiAssinadora.Models
 
         public Certificado Certificado { get; set; }
 
+        public DateTime Data{get;set;}
+
         public Documento(string nome, string UserId, long CertificadoId, byte[] arquivo)
         {
             Nome = nome;
             this.UserId = UserId;
             this.CertificadoId = CertificadoId;
             Arquivo = arquivo;
+            Data = DateTime.Now;
         }
 
     }

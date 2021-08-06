@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
@@ -16,6 +17,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
@@ -35,6 +37,7 @@ namespace ApiAssinadora
         public void ConfigureServices(IServiceCollection services)
         {
             //Fluent Validator
+            services.AddRazorPages();
             services.AddControllers().AddFluentValidation(options =>
             {
                 options.RegisterValidatorsFromAssemblyContaining<Startup>();
@@ -119,12 +122,32 @@ namespace ApiAssinadora
             app.UseAuthentication();
 
             app.UseAuthorization();
+            //Permite Acesso a Arquivos na API, porem apenas com a autenticação
+            app.UseStaticFiles(new StaticFileOptions
+            {
+                OnPrepareResponse = ctx =>
+                {
+                    if (ctx.Context.User.Identity.IsAuthenticated)
+                    {
+                        ctx.Context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+                        ctx.Context.Response.ContentLength = 0;
+                        ctx.Context.Response.Body = Stream.Null;
+                        ctx.Context.Response.Headers.Add("Cache-Control", "no-store");
+                    }
+                    else
+                        ctx.Context.Response.Redirect("/Swagger/");
+                },
+                FileProvider = new PhysicalFileProvider(
+                 Path.Combine(env.ContentRootPath, "Arquivos")),
+                RequestPath = "/Arquivos"
+            });
 
             app.UseMiddleware(typeof(ErrorHandlingMiddleware));
 
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapRazorPages();
             });
         }
     }
