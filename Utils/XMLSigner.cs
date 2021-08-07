@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Net;
 using System.Security;
@@ -14,7 +15,7 @@ public class XMLSigner
         X509Certificate2 cert = new X509Certificate2(certificado, key);
 
         XmlDocument doc = new XmlDocument();
-        //doc.PreserveWhitespace = true;
+        doc.PreserveWhitespace = true;
         doc.Load(new MemoryStream(xml));
 
         SignedXml signedXml = new SignedXml(doc);
@@ -43,11 +44,15 @@ public class XMLSigner
         doc.DocumentElement.AppendChild(signedXml.GetXml());
 
         byte[] xmlsig;
+
+        //doc.Save(new FileStream(@"E:\TesteAssinado.xml", FileMode.OpenOrCreate));
         using (var ms = new MemoryStream())
         {
             doc.Save(ms);
             xmlsig = ms.ToArray();
         }
+        doc = null;
+        GC.Collect();
         return xmlsig;
     }
 }

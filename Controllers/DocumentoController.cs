@@ -46,10 +46,7 @@ public class DocumentoController : ControllerBase
     public async Task<ActionResult<dynamic>> Download(long id)
     {
         var resp = await _docserv.Download(User.Identity.Name, id);
-
-        //"application/octet-stream
-
-        return File(resp.Arquivo, "text/xml", resp.Nome);
+        return File(resp.Arquivo, "application/octet-stream", resp.Nome);
     }
 
     [HttpGet("Download/Url/{id}")]
