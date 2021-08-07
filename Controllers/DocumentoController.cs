@@ -46,7 +46,10 @@ public class DocumentoController : ControllerBase
     public async Task<ActionResult<dynamic>> Download(long id)
     {
         var resp = await _docserv.Download(User.Identity.Name, id);
-        return File(resp.Arquivo, "application/octet-stream", resp.Nome);
+
+        //"application/octet-stream
+
+        return File(resp.Arquivo, "text/xml", resp.Nome);
     }
 
     [HttpGet("Download/Url/{id}")]
@@ -54,9 +57,16 @@ public class DocumentoController : ControllerBase
     {
         var token = await Request.HttpContext.GetTokenAsync("access_token");
         string path = Request.HttpContext.Request.Host.Value;
-        var resp = await _docserv.DownloadUrl(User.Identity.Name, id,path,token);
+        var resp = await _docserv.DownloadUrl(User.Identity.Name, id, path, token);
         return resp;
     }
+
+    [HttpPost("Teste/Xml/")]
+    public async Task<ActionResult<DocumentoOutputPostXMLDTO>> TesteXML([FromForm] DocumentoInputPostDTO input)
+    {
+        return await _docserv.TesteXML(input, User.Identity.Name);
+    }
+
 
 
 }

@@ -72,6 +72,22 @@ public class DocumentoOutputGetDownloadDTO
 
 }
 
+public class DocumentoOutputPostXMLDTO
+{
+    public long Id{get;set;}
+    public string Nome{get;set;}
+
+    public DocumentoOutputPostXMLDTO(long id,string nome)
+    {
+        Id = id;
+        Nome = nome;
+    }
+
+
+}
+
+
+
 
 
 

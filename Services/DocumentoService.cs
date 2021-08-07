@@ -9,6 +9,7 @@ using iTextSharp.text.pdf;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Cryptography;
 
 public class DocumentoService : IDocumentoService
 {
@@ -121,8 +122,38 @@ public class DocumentoService : IDocumentoService
             }
 
         }
-        var urlDownload = path + "/Arquivos/Documentos?" + "i=" + token + "&d=" + documento.Nome;
-        var output = new DocumentoOutputUrlDTO(documento.Id,documento.Nome,urlDownload);
+        Criptografia cripto = new Criptografia();
+        string ID = cripto.Criptografar(usuario.UserName, false);
+        //string DOC = cripto.Criptografar(documento.Id.ToString(),false);
+
+        var urlDownload = path + "/Arquivos/Documentos" + "?t=" + ID + "&i=";// + DOC;
+        Console.WriteLine(ID);
+        Console.WriteLine(cripto.Descriptografar(ID, false));
+        var output = new DocumentoOutputUrlDTO(documento.Id, documento.Nome, urlDownload);
         return output;
+    }
+    public async Task<DocumentoOutputPostXMLDTO> TesteXML(DocumentoInputPostDTO input, string user)
+    {
+        ApplicationUser usuario = await _user.FindByNameAsync(user);
+        var userid = usuario.Id;
+
+        var certificado = await _context.Certificados.FirstOrDefaultAsync(c => c.UserId == userid.ToString() && c.Id == input.CertId);
+        XMLSigner Signer = new XMLSigner();
+        byte[] xml;
+
+        using (var ms = new MemoryStream())
+        {
+            input.Arquivo.CopyTo(ms);
+            xml = ms.ToArray();
+        }
+
+        byte[] xmlsig = Signer.SingXML(certificado.Arquivo, certificado.Senha, xml);
+        
+        var documento = new Documento(input.Arquivo.FileName, usuario.Id, certificado.Id,xmlsig);
+        _context.Documentos.Add(documento);
+        await _context.SaveChangesAsync();
+
+        var output = new DocumentoOutputPostXMLDTO(documento.Id, documento.Nome);
+        return (output);
     }
 }

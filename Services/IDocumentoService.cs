@@ -12,5 +12,7 @@ public interface IDocumentoService
     Task<DocumentoOutputGetDownloadDTO> Download(string user,long id);
     Task<DocumentoOutputUrlDTO> DownloadUrl(string user,long id,string path,string token);
 
+    Task<DocumentoOutputPostXMLDTO> TesteXML(DocumentoInputPostDTO input,string user);
+
 
 }
