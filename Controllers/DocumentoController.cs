@@ -14,6 +14,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.AspNetCore.Authentication;
+using System.Threading;
 
 [Authorize]
 [ApiController]
@@ -27,19 +28,25 @@ public class DocumentoController : ControllerBase
         _docserv = DocumentoService;
     }
 
-
-    [HttpPost("Assinar")]
+    [HttpPost("Enviar/Pdf")]
     public async Task<ActionResult<dynamic>> EnviaArquivo([FromForm] DocumentoInputPostDTO input)
     {
-        var resp = await _docserv.Add(input, User.Identity.Name);
-        return File(resp.Arquivo, "application/octet-stream", resp.Nome);
+        var resp = await _docserv.EnviarPDF(input, User.Identity.Name);
+        return Ok(resp);
     }
 
-    [HttpGet("GetAll")]
-    public async Task<ActionResult<dynamic>> GetAll()
+    [HttpPost("Enviar/Xml/")]
+    public async Task<ActionResult<DocumentoOutputPostXMLDTO>> TesteXML([FromForm] DocumentoInputPostXMLDTO input)
     {
-        var resp = await _docserv.Get(User.Identity.Name);
-        return resp;
+        return await _docserv.EnviarXML(input, User.Identity.Name);
+    }
+
+
+    [HttpGet("ListarDocumentos")]
+    public async Task<ActionResult<CertificadoOutputListaDTO>> GetAll(CancellationToken cancellationToken, int limit = 5, int page = 1)
+    {
+        var output = await _docserv.Get(User.Identity.Name, limit, page, cancellationToken);
+        return Ok(output);
     }
 
     [HttpGet("Download/{id}")]
@@ -48,7 +55,7 @@ public class DocumentoController : ControllerBase
         var resp = await _docserv.Download(User.Identity.Name, id);
         return File(resp.Arquivo, "application/octet-stream", resp.Nome);
     }
-
+    /*
     [HttpGet("Download/Url/{id}")]
     public async Task<ActionResult<DocumentoOutputUrlDTO>> DownloadUrl(long id)
     {
@@ -57,13 +64,5 @@ public class DocumentoController : ControllerBase
         var resp = await _docserv.DownloadUrl(User.Identity.Name, id, path, token);
         return resp;
     }
-
-    [HttpPost("Teste/Xml/")]
-    public async Task<ActionResult<DocumentoOutputPostXMLDTO>> TesteXML([FromForm] DocumentoInputPostDTO input)
-    {
-        return await _docserv.TesteXML(input, User.Identity.Name);
-    }
-
-
-
+    */
 }

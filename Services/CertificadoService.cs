@@ -9,6 +9,7 @@ using DocSign.Domain.Util.Sign;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Net5_Api.Extensions;
 
 public class CertificadoService : ICertificadoService
 {
@@ -55,10 +56,26 @@ public class CertificadoService : ICertificadoService
         return resp;
     }
 
-    public async Task<List<CertificadoOutputGetDTO>> Get(string user)
+    public async Task<CertificadoOutputListaDTO> Get(string user, int limit, int page, CancellationToken cancellationToken)
     {
         ApplicationUser usuario = await _user.FindByNameAsync(user);
         var userid = usuario.Id;
+
+        var pagedModel = await _context.Certificados
+                .AsNoTracking().Where(x => x.UserId == userid.ToString())
+                .OrderBy(c => c.Id)
+                .PaginateAsync(page, limit, cancellationToken);
+
+        var CurrentPage = pagedModel.CurrentPage;
+        var TotalPages = pagedModel.TotalPages;
+        var TotalItems = pagedModel.TotalItems;
+        var Items = pagedModel.Items.Select(c => new CertificadoOutputGetDTO(c.Id, c.Nome, c.Data)).ToList();
+
+        CertificadoOutputListaDTO output = new CertificadoOutputListaDTO(CurrentPage, TotalPages, TotalItems, Items);
+
+        return output;
+
+        /*
         var lista = await _context.Certificados.Where(x => x.UserId == userid.ToString()).ToListAsync();
         List<CertificadoOutputGetDTO> listaout = new List<CertificadoOutputGetDTO>();
 
@@ -68,6 +85,7 @@ public class CertificadoService : ICertificadoService
         }
 
         return listaout;
+        */
     }
 
     public async Task<CertificadoOutputPutDTO> Update(CertificadoInputPutDTO input, string user)

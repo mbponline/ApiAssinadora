@@ -5,6 +5,7 @@ using System.Net.Http;
 using Microsoft.AspNetCore.Authentication;
 using System;
 using System.Collections.Generic;
+using System.Threading;
 
 [Authorize]
 [ApiController]
@@ -26,9 +27,10 @@ public class CertificadoController : ControllerBase
     }
 
     [HttpGet("Listar")]
-    public async Task<ActionResult<List<CertificadoOutputGetDTO>>> Get()
+    public async Task<ActionResult<CertificadoOutputListaDTO>> Get(CancellationToken cancellationToken, int limit = 5, int page = 1)
     {
-        return await _certserv.Get(User.Identity.Name);
+        var output =await _certserv.Get(User.Identity.Name,limit, page, cancellationToken);
+        return Ok(output);
     }
 
     [HttpPut("Atualizar")]

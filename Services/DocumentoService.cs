@@ -10,6 +10,8 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Cryptography;
+using Net5_Api.Extensions;
+using System.Threading;
 
 public class DocumentoService : IDocumentoService
 {
@@ -23,19 +25,11 @@ public class DocumentoService : IDocumentoService
         _user = user;
     }
 
-    public async Task<DocumentoOutputPostDTO> Add(DocumentoInputPostDTO input, string user)
+    public async Task<DocumentoOutputPostDTO> EnviarPDF(DocumentoInputPostDTO input, string user)
     {
         ApplicationUser usuario = await _user.FindByNameAsync(user);
         var userid = usuario.Id;
         var certid = input.CertId;
-
-        string dir = _environment.ContentRootPath;
-        string caminho = dir + "\\Arquivos\\Documentos\\Assinados\\" + input.Arquivo.FileName;
-
-        if (!Directory.Exists(dir + "\\Arquivos\\Documentos\\Assinados\\"))
-        {
-            Directory.CreateDirectory(dir + "\\Arquivos\\Documentos\\Assinados\\");
-        }
 
         byte[] arquivopdf;
 
@@ -55,14 +49,9 @@ public class DocumentoService : IDocumentoService
         MetaData MyMD = new MetaData();
         MyMD.Info = reader.Info;
 
-        PDFSigner pdfs = new PDFSigner(reader, caminho, myCert, MyMD);
+        PDFSigner pdfs = new PDFSigner(reader, "", myCert, MyMD);
 
-        var pdfstream = pdfs.SignReader("Teste", "Teste", "Teste", true);
-
-        // using (var stream = new FileStream(caminho, FileMode.CreateNew))
-        //{
-        //   pdfstream.WriteTo(stream);
-        // }
+        var pdfstream = pdfs.SignReader("Teste", "Teste", "Teste", false);
 
         byte[] arquivo = pdfstream.ToArray();
 
@@ -71,24 +60,31 @@ public class DocumentoService : IDocumentoService
         _context.Documentos.Add(documento);
         await _context.SaveChangesAsync();
 
-        var output = new DocumentoOutputPostDTO(documento.Id, documento.Nome, documento.Arquivo);
+        var output = new DocumentoOutputPostDTO(documento.Id, documento.Nome, documento.Data);
 
         return output;
     }
 
-    public async Task<List<DocumentoOutputGetDTO>> Get(string user)
+    public async Task<DocumentoOutputListaDTO> Get(string user, int limit, int page, CancellationToken cancellationToken)
     {
         ApplicationUser usuario = await _user.FindByNameAsync(user);
         var userid = usuario.Id;
-        var lista = await _context.Documentos.Include(d => d.Certificado).Where(x => x.UserId == userid.ToString()).ToListAsync();
-        List<DocumentoOutputGetDTO> listaout = new List<DocumentoOutputGetDTO>();
 
-        foreach (var doc in lista)
-        {
-            listaout.Add(new DocumentoOutputGetDTO(doc.Id, doc.Nome, doc.Certificado.Nome, doc.Data));
-        }
+        var pagedModel = await _context.Documentos
+                .AsNoTracking()
+                .Include(c => c.Certificado)
+                .Where(x => x.UserId == userid.ToString())
+                .OrderBy(x => x.Id)
+                .PaginateAsync(page, limit, cancellationToken);
 
-        return listaout;
+        var CurrentPage = pagedModel.CurrentPage;
+        var TotalPages = pagedModel.TotalPages;
+        var TotalItems = pagedModel.TotalItems;
+        var Items = pagedModel.Items.Select(c => new DocumentoOutputGetDTO(c.Id, c.Nome, c.Certificado.Nome, c.Data)).ToList();
+
+        DocumentoOutputListaDTO output = new DocumentoOutputListaDTO(CurrentPage, TotalPages, TotalItems, Items);
+
+        return output;
     }
 
     public async Task<DocumentoOutputGetDownloadDTO> Download(string user, long id)
@@ -132,7 +128,7 @@ public class DocumentoService : IDocumentoService
         var output = new DocumentoOutputUrlDTO(documento.Id, documento.Nome, urlDownload);
         return output;
     }
-    public async Task<DocumentoOutputPostXMLDTO> TesteXML(DocumentoInputPostDTO input, string user)
+    public async Task<DocumentoOutputPostXMLDTO> EnviarXML(DocumentoInputPostXMLDTO input, string user)
     {
         ApplicationUser usuario = await _user.FindByNameAsync(user);
         var userid = usuario.Id;
@@ -148,8 +144,8 @@ public class DocumentoService : IDocumentoService
         }
 
         byte[] xmlsig = Signer.SingXML(certificado.Arquivo, certificado.Senha, xml);
-        
-        var documento = new Documento(input.Arquivo.FileName, usuario.Id, certificado.Id,xmlsig);
+
+        var documento = new Documento(input.Arquivo.FileName, usuario.Id, certificado.Id, xmlsig);
         _context.Documentos.Add(documento);
         await _context.SaveChangesAsync();
 

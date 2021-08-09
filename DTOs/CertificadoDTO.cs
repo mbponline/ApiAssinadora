@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
 
 public class CertificadoInputPostDTO
@@ -29,7 +30,7 @@ public class CertificadoOutputGetDTO
     public long Id { get; set; }
     public string Data { get; set; }
 
-    public CertificadoOutputGetDTO(long id, string nome,DateTime data)
+    public CertificadoOutputGetDTO(long id, string nome, DateTime data)
     {
         Id = id;
         Nome = nome;
@@ -68,4 +69,21 @@ public class CertificadoOutputDeleteDTO
         Id = id;
         Nome = nome;
     }
+}
+
+public class CertificadoOutputListaDTO
+{
+    public CertificadoOutputListaDTO(int currentpage, int totalitems, int totalpages, List<CertificadoOutputGetDTO> items)
+    {
+        CurrentPage = currentpage;
+        TotalItems = totalitems;
+        TotalPages = totalpages;
+        Items = items;
+    }
+
+    public int CurrentPage { get; set; }
+    public int TotalItems { get; set; }
+    public int TotalPages { get; set; }
+    public List<CertificadoOutputGetDTO> Items { get; set; }
+
 }
