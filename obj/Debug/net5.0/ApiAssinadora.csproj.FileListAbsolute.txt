@@ -89,3 +89,5 @@ E:\Curso C#\Assinador\ApiAssinadora\obj\Debug\net5.0\Razor\Pages\Index.cshtml.g.
 E:\Curso C#\Assinador\ApiAssinadora\obj\Debug\net5.0\Razor\Pages\_ViewImport.cshtml.g.cs
 E:\Curso C#\Assinador\ApiAssinadora\obj\Debug\net5.0\ApiAssinadora.RazorTargetAssemblyInfo.cs
 E:\Curso C#\Assinador\ApiAssinadora\obj\Debug\net5.0\ApiAssinadora.Views.pdb
+E:\Curso C#\Assinador\ApiAssinadora\bin\Debug\net5.0\Npgsql.dll
+E:\Curso C#\Assinador\ApiAssinadora\bin\Debug\net5.0\Npgsql.EntityFrameworkCore.PostgreSQL.dll

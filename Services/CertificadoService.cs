@@ -31,26 +31,18 @@ public class CertificadoService : ICertificadoService
         string dir = _environment.ContentRootPath;
         string caminho = dir + "\\Arquivos\\Certificados\\_temp" + input.Arquivo.FileName;
 
-        if (!Directory.Exists(dir + "\\Arquivos\\Certificados\\"))
-        {
-            Directory.CreateDirectory(dir + "\\Arquivos\\Certificados\\");
-        }
-
         byte[] arquivo;
         using (var ms = new MemoryStream())
         {
             input.Arquivo.CopyTo(ms);
             arquivo = ms.ToArray();
             Cert certificado = new Cert(ms, input.Password);
-            //arquivo = Convert.ToBase64String(fileBytes);
         }
         var ext = System.IO.Path.GetExtension(input.Arquivo.FileName);
 
         var cert = new Certificado(input.Arquivo.FileName, arquivo, ext, input.Password, userid.ToString());
         _context.Certificados.Add(cert);
         await _context.SaveChangesAsync();
-
-        File.WriteAllBytes(caminho, cert.Arquivo);
 
         var resp = new CertificadoOutputPostDTO(cert.Id, cert.Nome);
         return resp;

@@ -96,7 +96,7 @@ namespace ApiAssinadora
                 };
             });
             // Database
-            services.AddDbContext<ApplicationDbContext>(options => options.UseSqlite("Data Source=myapp.db"));
+            services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(Configuration.GetConnectionString("Default")));
             // Services
             services.AddScoped<ICertificadoService, CertificadoService>();
             services.AddScoped<IDocumentoService, DocumentoService>();
@@ -108,12 +108,10 @@ namespace ApiAssinadora
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-                app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "ApiAssinadora v1"));
-            }
+
+            app.UseDeveloperExceptionPage();
+            app.UseSwagger();
+            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "ApiAssinadora v1"));
 
             app.UseHttpsRedirection();
 
@@ -123,6 +121,7 @@ namespace ApiAssinadora
 
             app.UseAuthorization();
             //Permite Acesso a Arquivos na API, porem apenas com a autenticação
+            /*
             app.UseStaticFiles(new StaticFileOptions
             {
                 OnPrepareResponse = ctx =>
@@ -141,7 +140,7 @@ namespace ApiAssinadora
                  Path.Combine(env.ContentRootPath, "Arquivos")),
                 RequestPath = "/Arquivos"
             });
-
+            */
             app.UseMiddleware(typeof(ErrorHandlingMiddleware));
 
             app.UseEndpoints(endpoints =>
