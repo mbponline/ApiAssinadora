@@ -46,6 +46,16 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
 
         });
 
+        modelBuilder.Entity<Documento>(entity =>
+        {
+            entity.Property(x => x.Arquivo).HasColumnType("longblob");
+        });
+
+        modelBuilder.Entity<Certificado>(entity =>
+       {
+           entity.Property(x => x.Arquivo).HasColumnType("longblob");
+       });
+
 
 
     }

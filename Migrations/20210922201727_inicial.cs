@@ -4,7 +4,7 @@ using MySql.EntityFrameworkCore.Metadata;
 
 namespace ApiAssinadora.Migrations
 {
-    public partial class _1 : Migration
+    public partial class inicial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -55,7 +55,7 @@ namespace ApiAssinadora.Migrations
                     Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn),
                     Nome = table.Column<string>(type: "text", nullable: true),
-                    Arquivo = table.Column<byte[]>(type: "varbinary(4000)", nullable: true),
+                    Arquivo = table.Column<byte[]>(type: "blob", nullable: true),
                     Tipo = table.Column<string>(type: "text", nullable: true),
                     Senha = table.Column<string>(type: "text", nullable: true),
                     UserId = table.Column<string>(type: "text", nullable: false),
@@ -179,7 +179,7 @@ namespace ApiAssinadora.Migrations
                     Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn),
                     Nome = table.Column<string>(type: "text", nullable: true),
-                    Arquivo = table.Column<byte[]>(type: "varbinary(4000)", nullable: true),
+                    Arquivo = table.Column<byte[]>(type: "blob", nullable: true),
                     UserId = table.Column<string>(type: "varchar(110)", nullable: true),
                     CertificadoId = table.Column<long>(type: "bigint", nullable: false),
                     Data = table.Column<DateTime>(type: "datetime", nullable: false)

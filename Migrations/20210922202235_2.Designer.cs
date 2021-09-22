@@ -8,8 +8,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ApiAssinadora.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20210922191430_1")]
-    partial class _1
+    [Migration("20210922202235_2")]
+    partial class _2
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -25,7 +25,7 @@ namespace ApiAssinadora.Migrations
                         .HasColumnType("bigint");
 
                     b.Property<byte[]>("Arquivo")
-                        .HasColumnType("varbinary(4000)");
+                        .HasColumnType("longblob");
 
                     b.Property<DateTime>("Data")
                         .HasColumnType("datetime");
@@ -55,7 +55,7 @@ namespace ApiAssinadora.Migrations
                         .HasColumnType("bigint");
 
                     b.Property<byte[]>("Arquivo")
-                        .HasColumnType("varbinary(4000)");
+                        .HasColumnType("longblob");
 
                     b.Property<long>("CertificadoId")
                         .HasColumnType("bigint");

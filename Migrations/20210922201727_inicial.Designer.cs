@@ -2,14 +2,16 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace ApiAssinadora.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210922201727_inicial")]
+    partial class inicial
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -23,7 +25,7 @@ namespace ApiAssinadora.Migrations
                         .HasColumnType("bigint");
 
                     b.Property<byte[]>("Arquivo")
-                        .HasColumnType("longblob");
+                        .HasColumnType("blob");
 
                     b.Property<DateTime>("Data")
                         .HasColumnType("datetime");
@@ -53,7 +55,7 @@ namespace ApiAssinadora.Migrations
                         .HasColumnType("bigint");
 
                     b.Property<byte[]>("Arquivo")
-                        .HasColumnType("longblob");
+                        .HasColumnType("blob");
 
                     b.Property<long>("CertificadoId")
                         .HasColumnType("bigint");
