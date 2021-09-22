@@ -96,7 +96,7 @@ namespace ApiAssinadora
                 };
             });
             // Database
-            services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(Configuration.GetConnectionString("Default")));
+            services.AddDbContext<ApplicationDbContext>(options => options.UseMySQL(Configuration.GetConnectionString("Default")));
             // Services
             services.AddScoped<ICertificadoService, CertificadoService>();
             services.AddScoped<IDocumentoService, DocumentoService>();
